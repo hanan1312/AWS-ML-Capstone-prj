@@ -44,83 +44,47 @@ def test(model, test_loader, criterion, device, epoch_no):
             total_loss, running_corrects, len(test_loader.dataset), 100.0 * total_acc
         ))
 
-# def train(model, train_loader, criterion, optimizer, device, epoch_no):
-#     '''
-#     TODO: Complete this function that can take a model and
-#           data loaders for training and will get train the model
-#           Remember to include any debugging/profiling hooks that you might need
-#     '''
-#     logger.info(f"Epoch: {epoch_no} - Training Model on Complete Training Dataset" )
-#     model.train()
-#     running_loss = 0
-#     running_corrects = 0
-#     running_samples = 0
-#     for inputs, labels in train_loader:
-#         inputs = inputs.to(device)
-#         labels = labels.to(device)
-#         optimizer.zero_grad()
-#         outputs = model(inputs)
-#         loss = criterion(outputs, labels)
-#         pred = outputs.argmax(dim=1,  keepdim=True)
-#         running_loss += loss.item() * inputs.size(0)
-#         running_corrects += pred.eq(labels.view_as(pred)).sum().item()
-#         running_samples += len(inputs)
-#         loss.backward()
-#         optimizer.step()
-#         if running_samples % 100 == 0:
-#             logger.info("\nTrain set:  [{}/{} ({:.0f}%)]\t Loss: {:.2f}\tAccuracy: {}/{} ({:.2f}%)".format(
-#                 running_samples,
-#                 len(train_loader.dataset),
-#                 100.0 * (running_samples / len(train_loader.dataset)),
-#                 loss.item(),
-#                 running_corrects,
-#                 running_samples,
-#                 100.0*(running_corrects/ running_samples)
-#             ))
-#     total_loss = running_loss / len(train_loader.dataset)
-#     total_acc = running_corrects/ len(train_loader.dataset)
-#     logger.info( "\nTrain set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n".format(
-#         total_loss, 100.0 * total_acc))
-# #     logger.info( "\nTrain set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n".format(
-# #         total_loss, running_corrects, len(train_loader.dataset), 100.0 * total_acc
-# #     ))   
-#     return model
-def train(model, train_loader, criterion, optimizer, device, epochs=5):
+def train(model, train_loader, criterion, optimizer, device, epoch_no):
     '''
     TODO: Complete this function that can take a model and
           data loaders for training and will get train the model
           Remember to include any debugging/profiling hooks that you might need
     '''
-    logger.info("starting training...")
-    logger.info(device)
-    for epoch in range(epochs):
-        running_corrects = 0
-        running_loss = 0.0
-        for batch_idx, (data, target) in enumerate(train_loader):
-#             logger.info(batch_idx)
-            optimizer.zero_grad()
-            data = data.to(device)
-            target = target.to(device)
-            output = model(data)
-            loss = criterion(output, target)
-            preds = output.argmax(dim=1, keepdim=True)
-            running_loss += loss.item() * data.size(0)
-            running_corrects += preds.eq(target.view_as(preds)).sum().item()
-            loss.backward()
-            optimizer.step()
-            if batch_idx % 100 == 0:
-                logger.info(
-                    "Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}".format(
-                        epoch,
-                        batch_idx * len(data),
-                        len(train_loader.dataset),
-                        100.0 * batch_idx / len(train_loader),
-                        loss.item()))
-
-        epoch_loss = running_loss / len(train_loader.dataset)
-        epoch_acc = running_corrects / len(train_loader.dataset)
-        logger.info('Loss: {:.4f} Acc: {:.4f}'.format(epoch_loss, epoch_acc))
+    logger.info(f"Epoch: {epoch_no} - Training Model on Complete Training Dataset" )
+    model.train()
+    running_loss = 0
+    running_corrects = 0
+    running_samples = 0
+    for inputs, labels in train_loader:
+        inputs = inputs.to(device)
+        labels = labels.to(device)
+        optimizer.zero_grad()
+        outputs = model(inputs)
+        loss = criterion(outputs, labels)
+        pred = outputs.argmax(dim=1,  keepdim=True)
+        running_loss += loss.item() * inputs.size(0)
+        running_corrects += pred.eq(labels.view_as(pred)).sum().item()
+        running_samples += len(inputs)
+        loss.backward()
+        optimizer.step()
+        if running_samples % 100 == 0:
+            logger.info("\nTrain set:  [{}/{} ({:.0f}%)]\t Loss: {:.2f}\tAccuracy: {}/{} ({:.2f}%)".format(
+                running_samples,
+                len(train_loader.dataset),
+                100.0 * (running_samples / len(train_loader.dataset)),
+                loss.item(),
+                running_corrects,
+                running_samples,
+                100.0*(running_corrects/ running_samples)
+            ))
+    total_loss = running_loss / len(train_loader.dataset)
+    total_acc = running_corrects/ len(train_loader.dataset)
+    
+    logger.info( "\nTrain set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n".format(
+        total_loss, running_corrects, len(train_loader.dataset), 100.0 * total_acc
+    ))   
     return model
+
     
 def net():
     model = models.resnet50(pretrained = True) #Use the pretrained resnet50 model with 50 layers
@@ -193,9 +157,9 @@ def main(args):
     '''
     TODO: Test the model to see its accuracy
     '''
-#     for epoch_no in range(4):
-#         logger.info(f"Epoch {epoch_no} - Starting Training phase.")
-#         model=train(model, train_data_loader, loss_criterion, optimizer, device, epoch_no)
+    for epoch_no in range(4):
+        logger.info(f"Epoch {epoch_no} - Starting Training phase.")
+        model=train(model, train_data_loader, loss_criterion, optimizer, device, epoch_no)
         
     '''
     TODO: Save the trained model
